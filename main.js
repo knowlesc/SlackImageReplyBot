@@ -1,5 +1,6 @@
 var ImageReplyBot = require('./bot/bot');
 var request = require("request");
+var express = require("express");
 
 var slackToken = process.env.SLACKTOKEN;
 
@@ -26,5 +27,17 @@ request({ url: botsConfig, json: true},
     }
     if (error) {
       console.error(error);
+      throw new Error("Failed to retrieve bots config.");
     }
+});
+
+var app = express();
+var port = process.env.PORT || 3000;
+
+app.get('/', function (req, res) {
+  res.send('Bots are running!');
+});
+
+app.listen(port, () => {
+  console.log('App is listening on port ' + port);
 });
