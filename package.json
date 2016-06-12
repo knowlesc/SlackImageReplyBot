@@ -1,7 +1,7 @@
 {
-  "name": "mcreebot",
+  "name": "SlackImageReplyBot",
   "version": "1.0.0",
-  "description": "It's high noon!",
+  "description": "SlackImageReplyBot",
   "main": "main.js",
   "scripts": {
     "start": "node main",
