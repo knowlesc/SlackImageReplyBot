@@ -1,1 +1,1 @@
-"# SlackImageReplyBot" 
+# SlackImageReplyBot
