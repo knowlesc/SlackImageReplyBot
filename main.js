@@ -1,6 +1,10 @@
-var ImageReplyBot = require('./bot/bot');
-var request = require("request");
+var ImageReplyBot = require('./src/bot');
+var ConfigReader = require('./src/configReader')
 var express = require("express");
+
+process.on("unhandledRejection", (error) => {
+  throw new Error(error);
+});
 
 var slackToken = process.env.SLACKTOKEN;
 
@@ -9,27 +13,27 @@ if (!slackToken) {
 }
 
 var botsConfig = process.env.BOTSCONFIG;
+var botsConfigRemote = process.env.BOTSCONFIGREMOTE;
 
-if (!botsConfig) {
-  throw new Error("BOTSCONFIG environment variable must be set with a URL to a json file.")
+if (!botsConfig && !botsConfigRemote) {
+  throw new Error("BOTSCONFIG or BOTSCONFIGREMOTE environment variable must be set with a path or URL to a json file.")
 }
 
 console.log("Loading bots config from " + botsConfig);
 
-request({ url: botsConfig, json: true},
-  (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-        if (body) {
-          body.forEach(botParams => {
-            var bot = new ImageReplyBot(botParams, process.env.SLACKTOKEN);
-          })
-        }
-    }
-    if (error) {
-      console.error(error);
-      throw new Error("Failed to retrieve bots config.");
-    }
-});
+var readBotParams = botsConfig
+   ? ConfigReader.readLocal
+   : ConfigReader.readRemote
+
+readBotParams(botsConfig)
+  .then((botParamsArray) => {
+      botParamsArray.forEach(botParams => {
+        var bot = new ImageReplyBot(botParams, process.env.SLACKTOKEN);
+      })
+    }, (error) => {
+      console.error("Error reading bot params");
+      throw new Error(error);
+    });
 
 var app = express();
 var port = process.env.PORT || 3000;
