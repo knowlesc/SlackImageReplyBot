@@ -5,14 +5,20 @@ var fs = require("fs");
 
 class ConfigReader {
 
-  static readLocal(filename) {
+  static readBotsConfig(filename) {
+    console.log("Loading bots config from " + filename);
+
     return new Promise((resolve, reject) => {
       fs.readFile(filename, 'utf8', (error, data) => {
         if(error) {
-            reject(error);
+          if (error.code === "ENOENT") {
+            resolve();
+          }
+          reject(error);
+        } else {
+          var jsonData = JSON.parse(data);
+          resolve(jsonData);
         }
-        var jsonData = JSON.parse(data);
-        resolve(jsonData);
       });
     });
   }

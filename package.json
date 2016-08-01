@@ -14,7 +14,11 @@
     "slackbots": "^0.5.1"
   },
   "devDependencies": {
+    "browserify": "^13.1.0",
     "gulp": "^3.9.1",
-    "gulp-util": "^3.0.7"
+    "gulp-eslint": "^3.0.1",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.9",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
