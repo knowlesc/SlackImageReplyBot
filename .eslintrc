@@ -1,8 +1,9 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 6,
     "ecmaFeatures": {
-        "templateStrings": true,
-        "arrowFunctions": true,
-        "modules": true,
-        "classes": true
+      "templateStrings": true,
+      "arrowFunctions": true
     }
+  }
 }

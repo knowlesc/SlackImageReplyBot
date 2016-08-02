@@ -1,0 +1,28 @@
+<div>
+  <md-card ng-repeat="bot in $ctrl.bots">
+
+    <md-card-title>
+
+      <md-card-title-text>
+        <span class="md-headline" ng-bind="bot.config.name"></span>
+        <span class="md-subhead">
+          <span class="glyphicon glyphicon-user" ng-class="bot.running ? 'status-on' : 'status-off'"></span>
+          <span ng-bind="bot.running ? 'started' : 'stopped'"></span>
+        </span>
+      </md-card-title-text>
+
+      <md-card-title-media>
+        <div class="md-media-lg card-media">
+          <img ng-src="{{ bot.config.imageUrl }}" class="md-card-image" alt="image caption">
+        </div>
+      </md-card-title-media>
+
+    </md-card-title>
+
+    <md-card-actions layout="row" layout-align="end center">
+      <md-button class="md-raised md-primary" ng-disabled="bot.running" ng-click="$ctrl.startBot(bot)">Start</md-button>
+      <md-button class="md-raised md-primary" ng-disabled="!bot.running" ng-click="$ctrl.stopBot(bot)">Stop</md-button>
+    </md-card-actions>
+
+  </md-card>
+</div>

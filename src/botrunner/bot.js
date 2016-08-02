@@ -4,24 +4,32 @@ var Bot = require('slackbots');
 
 class ImageReplyBot {
 
-  constructor(params, token) {
+  constructor(params, token, id) {
     if (!token) {
       throw new Error("No slack token provided to bot.");
     }
 
+    if (!id) {
+      throw new Error("No id provided to bot.");
+    }
+
+    this.id = id;
+
     this.validateParams(params);
     this.validateTriggers(params.triggers);
+
+    this.config = params;
 
     this.settings = {
       token: token,
       name: params.name,
     };
+
     this.triggers = params.triggers;
     this.imageUrl = params.imageUrl;
     this.channel = params.channel;
     this.user = null;
-
-    this.initializeBot();
+    this.running = false;
   }
 
   validateParams(params) {
@@ -58,7 +66,7 @@ class ImageReplyBot {
     });
   }
 
-  initializeBot() {
+  startBot() {
     this.slackbot = new Bot(this.settings);
 
     this.slackbot.on('start', () => {
@@ -76,6 +84,8 @@ class ImageReplyBot {
         });
       }
     });
+
+    this.running = true;
   }
 
   triggerMatch(message, trigger) {

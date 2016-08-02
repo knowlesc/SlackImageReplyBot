@@ -3,10 +3,13 @@
 var request = require("request");
 var fs = require("fs");
 
+var logger = require("./../common/logger");
+var log = new logger("botmanager");
+
 class ConfigReader {
 
   static readBotsConfig(filename) {
-    console.log("Loading bots config from " + filename);
+    log.info("Loading bots config from " + filename);
 
     return new Promise((resolve, reject) => {
       fs.readFile(filename, 'utf8', (error, data) => {
@@ -21,6 +24,21 @@ class ConfigReader {
         }
       });
     });
+  }
+
+  static writeBotsConfig(filename, config) {
+    log.info("Saving bots config to " + filename)
+
+    var data = JSON.stringify(config, null, "  ");
+
+    fs.writeFile(filename, data, (error) => {
+      if (error) {
+        log.error(error);
+        throw error;
+      } else {
+        log.info("Bots config successfully saved");
+      }
+    })
   }
 
   static readRemote(url) {
