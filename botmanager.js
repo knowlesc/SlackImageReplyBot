@@ -31,8 +31,6 @@ ConfigReader.readBotsConfig(configFile)
       throw new Error(error);
     });
 
-
-// FRONT END
 var app = express();
 var port = process.env.CLIENTPORT || 8080;
 

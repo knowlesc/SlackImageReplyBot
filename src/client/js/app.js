@@ -5,8 +5,7 @@ require("angular-animate");
 require("angular-aria");
 require("angular-material");
 
-require("./status/StatusPage");
-
+require("./status/statusPage");
 
 var app = angular.module("app", [
   "ngRoute",
