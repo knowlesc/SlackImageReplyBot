@@ -2,9 +2,9 @@
   "name": "SlackImageReplyBot",
   "version": "1.0.0",
   "description": "SlackImageReplyBot",
-  "main": "botrunner.js",
+  "main": "botmanager.js",
   "scripts": {
-    "start": "node botmanager && node botrunner",
+    "start": "node botmanager",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -21,7 +21,7 @@ gulp.task('bot-manager', function() {
 });
 
 gulp.task('lint', function () {
-  gulp.src(['src/client/js/**/*.js'])
+  return gulp.src(['src/client/js/**/*.js'])
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
@@ -43,7 +43,7 @@ gulp.task('css', function () {
 });
 
 gulp.task('js', function() {
-  browserify({
+  return browserify({
     entries: 'src/client/js/app.js',
     debug: true
   }).bundle()
