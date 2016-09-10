@@ -1,6 +1,7 @@
 'use strict';
 
 var Bot = require('slackbots');
+var logger = require("../common/logger");
 
 class ImageReplyBot {
 
@@ -19,6 +20,7 @@ class ImageReplyBot {
     this.validateTriggers(params.triggers);
 
     this.config = params;
+    this.log = new logger(params.name);
 
     this.settings = {
       token: token,
@@ -30,6 +32,7 @@ class ImageReplyBot {
     this.channel = params.channel;
     this.user = null;
     this.running = false;
+    this.messagesRespondedTo = 0;
   }
 
   validateParams(params) {
@@ -70,6 +73,9 @@ class ImageReplyBot {
     this.slackbot = new Bot(this.settings);
 
     this.slackbot.on('start', () => {
+      this.log.info('Bot has connected to Slack API.')
+      this.running = true;
+
       this.user = this.slackbot.users.find(
         (user) => user.name === this.slackbot.self.name);
     });
@@ -79,13 +85,25 @@ class ImageReplyBot {
         && !this.isOwnMessage(message)) {
         this.triggers.forEach(trigger => {
           if (this.triggerMatch(message, trigger)) {
+            this.log.info('Received trigger, sending response. Trigger: ' + trigger);
+            this.messagesRespondedTo++;
             this.sendTriggerMessage(trigger);
           }
         });
       }
     });
 
-    this.running = true;
+    this.slackbot.on('close', (data) => {
+      this.log.info('Websocket has closed' + data ? ": " + data : ".");
+      this.slackbot = null;
+      this.running = false;
+    })
+
+    this.slackbot.on('error', (error) => {
+      this.log.error(error);
+      this.slackbot = null;
+      this.running = false;
+    });
   }
 
   triggerMatch(message, trigger) {
