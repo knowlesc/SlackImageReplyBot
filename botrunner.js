@@ -1,6 +1,6 @@
 'use strict';
 
-var ImageReplyBot = require('./src/botrunner/bot');
+var ImageReplyBot = require('./src/botrunner/imageReplyBot');
 var express = require("express");
 var http = require('http');
 var io = require('socket.io');
@@ -28,15 +28,39 @@ class BotRunner {
   }
 
   startBot(id) {
-    for (var i = 0; i < this.bots.length; i++) {
-      if (this.bots[i].id === id) {
-        log.info("Starting both with id: " + id);
-        this.bots[i].startBot();
-        return;
+    return new Promise((resolve, reject) => {
+      var bot = this.bots.find((bot) => bot.id === id);
+      if (bot) {
+        bot.startBot()
+          .then(() => {
+            resolve();
+            return;
+          }, (error) => {
+            reject(error);
+            return;
+          });
+      } else {
+        reject("bot with id " + id + " not found.");
       }
-    }
+    });    
+  }
 
-    throw new Error("bot with id " + id + " not found.");
+  stopBot(id) {
+    return new Promise((resolve, reject) => {
+      var bot = this.bots.find((bot) => bot.id === id);
+      if (bot) {
+        bot.stopBot()
+          .then(() => {
+            resolve();
+            return;
+          }, (error) => {
+            reject(error);
+            return;
+          });
+      } else {
+        reject("bot with id " + id + " not found.");
+      }
+    });  
   }
 
   getBots() {

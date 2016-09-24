@@ -11,7 +11,7 @@ var botRunner = new BotRunner();
 
 // This handles errors getting swallowed up by promise rejection
 // https://gist.github.com/benjamingr/0237932cee84712951a2
-process.on("unhandledRejection", (error) => { throw new Error(error); });
+process.on("unhandledRejection", (error) => { log.error(error); });
 
 var configFile = "config.json";
 
@@ -47,20 +47,23 @@ app.get('/api/bots', (req, res) => {
 });
 
 app.post("/api/start/:id", (req, res) => {
-  try {
-    var id = parseInt(req.params.id);
-    botRunner.startBot(id);
-    res.sendStatus(200);
-  } catch (error) {
-    log.error(error);
-    res.sendStatus(500);
-  }
+  var id = parseInt(req.params.id);
+  botRunner.startBot(id)
+    .then(() => {
+      res.sendStatus(200);
+    }, (error) => {
+      res.sendStatus(500);
+    });
 });
 
 app.post("/api/stop/:id", (req, res) => {
-  // Not implemented
   var id = parseInt(req.params.id);
-  res.sendStatus(500);
+  botRunner.stopBot(id)
+    .then(() => {
+      res.sendStatus(200);
+    }, (error) => {
+      res.sendStatus(500);
+    });
 });
 
 app.listen(port);

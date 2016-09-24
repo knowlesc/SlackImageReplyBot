@@ -1,6 +1,7 @@
 .env
 config.json
 build
+.vscode 
 
 # Logs
 logs
