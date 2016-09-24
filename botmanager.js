@@ -1,12 +1,10 @@
 var ConfigReader = require('./src/botmanager/configReader')
 var express = require("express");
-var http = require('http');
-var io = require('socket.io-client');
 
 var logger = require("./src/common/logger");
 var log = new logger("botmanager");
 
-var BotRunner = require("./botrunner");
+var BotRunner = require("./src/botrunner/botrunner");
 var botRunner = new BotRunner();
 
 // This handles errors getting swallowed up by promise rejection

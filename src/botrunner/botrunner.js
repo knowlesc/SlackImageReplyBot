@@ -1,11 +1,11 @@
 'use strict';
 
-var ImageReplyBot = require('./src/botrunner/imageReplyBot');
+var ImageReplyBot = require('../bot/imageReplyBot');
 var express = require("express");
 var http = require('http');
 var io = require('socket.io');
 
-var logger = require("./src/common/logger");
+var logger = require("../common/logger");
 var log = new logger("botrunner");
 
 class BotRunner {

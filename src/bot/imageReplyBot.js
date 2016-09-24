@@ -1,6 +1,6 @@
 'use strict';
 
-var SlackBot = require('./slackbot');
+var SlackBot = require('./base/slackbot');
 var logger = require("../common/logger");
 
 class ImageReplyBot {
@@ -16,16 +16,20 @@ class ImageReplyBot {
 
     this.validateParams(params);
     this.validateTriggers(params.triggers);
+    
+    this.log = new logger(params.name);
 
     this.id = id;
+    this.token = token;
     this.config = params;
-    this.log = new logger(params.name);
-    this.token = token,
+    this.slackbot = new SlackBot(this.token, this.config.name);
+    
     this.user = null;
     this.running = false;
     this.messagesRespondedTo = 0;
     this.pinged = 0;
-    this.pingDelaySeconds = 1; 
+    this.pingDelaySeconds = 30; 
+    this.reconnectIntervals = [30, 300, 600, 1800, 3600]
   }
 
   validateParams(params) {
@@ -63,8 +67,6 @@ class ImageReplyBot {
   }
 
   startBot() {
-    this.slackbot = new SlackBot(this.token, this.config.name);
-
     return new Promise((resolve, reject) => {
       this.slackbot.connect()
         .then(() => {
@@ -125,6 +127,7 @@ class ImageReplyBot {
       this.log.info("Bot has stopped running.");
     } else {
       this.log.error("Bot has stopped running unexpectedly.");
+      this.reconnect(0);
     }
   }
 
@@ -158,6 +161,29 @@ class ImageReplyBot {
         this.ping();
       }
     }, this.pingDelaySeconds * 1000);
+  }
+
+  reconnect(attempts) {
+    if (attempts >= this.reconnectIntervals.length) {
+      this.log.error("Attempted reconnection " + this.reconnectIntervals.length + " times and failed.");
+      return;
+    }
+
+    this.log.info("Attempting to reconnect in " + this.reconnectIntervals[attempts] + " seconds.");
+
+    setTimeout(() => {
+      if (this.running) {
+        return;
+      }
+
+      this.startBot()
+        .then(() => {
+            this.log.info("Successfully reconnected.");
+          }, () => {
+            this.log.info("Reconnect failed");
+            this.reconnect(attempts + 1)
+          });
+    }, this.reconnectIntervals[attempts] * 1000);    
   }
 
   handleMessage(message) {

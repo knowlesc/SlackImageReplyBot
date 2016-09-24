@@ -3,8 +3,8 @@
 var request = require("request");
 var fs = require("fs");
 
-var logger = require("./../common/logger");
-var log = new logger("botmanager");
+var logger = require("../common/logger");
+var log = new logger("configReader");
 
 class ConfigReader {
 

@@ -57,7 +57,7 @@ gulp.task('js', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['botrunner.js', 'src/botrunner/**/*.js'], ['run']);
+  gulp.watch(['src/botrunner/**/*.js', 'src/bot/**/*.js'], ['run']);
   gulp.watch(['botmanager.js', 'src/botmanager/**/*.js'], ['run']);
   gulp.watch(['src/client/**/*.js', 'src/client/**/*.html'], ['lint', 'js']);
   gulp.watch(['src/client/style/**/*.less'], ['css']);
