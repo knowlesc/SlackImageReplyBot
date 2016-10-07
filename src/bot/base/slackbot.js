@@ -55,12 +55,12 @@ class SlackBot {
     });
 
     if (!channel) {
-      log.error("Channel " + channelName + " doesn't exist");
-      return;
+      throw new Error("Error posting message: Channel name not provided.");
     }
 
     params.channel = channel.id;
-
+    params.username = this.name;
+    
     return this.postToApi("chat.postMessage", params);
   }
 

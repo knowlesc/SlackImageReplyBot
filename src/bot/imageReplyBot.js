@@ -192,32 +192,35 @@ class ImageReplyBot {
       this.stats.lastPing = Date.now();
     }
 
-    if (this.isMessage(message)
-      && !this.isOwnMessage(message)) {
-      this.config.triggers.forEach(trigger => {
-        if (this.triggerMatch(message, trigger)) {
-          this.log.info('Received trigger, sending response. Trigger: ' + JSON.stringify(trigger));
-          this.stats.messagesRespondedTo++;
-          this.sendTriggerMessage(trigger);
-        }
-      });
-    }
-  }
-
-  triggerMatch(message, trigger) {
-    if (!trigger.channel) {
-      return true;
+    if (!this.isMessage(message) || this.isOwnMessage(message)) {
+      return;
     }
 
     var messageChannel = this.slackbot.channels.find(
       channel => channel.id === message.channel);
+    
+    if (!messageChannel) {
+      return;
+    }
 
+    this.config.triggers.forEach(trigger => {
+      if (this.triggerMatch(message, messageChannel, trigger)) {
+        var channel = trigger.channel || messageChannel.name;
+
+        this.log.info('Received trigger, sending response to ' + channel + '. Trigger: ' + JSON.stringify(trigger));
+        this.sendTriggerMessage(trigger, channel);
+        this.stats.messagesRespondedTo++;
+      }
+    });
+  }
+
+  triggerMatch(message, messageChannel, trigger) {
     return messageChannel
-      && messageChannel.name === trigger.channel
+      && (!trigger.channel || messageChannel.name === trigger.channel)
       && message.text.toLowerCase().indexOf(trigger.trigger.toLowerCase()) > -1;
   }
 
-  sendTriggerMessage(trigger) {
+  sendTriggerMessage(trigger, channel) {
     var params = {
       icon_url: this.config.imageUrl,
       attachments: [
@@ -228,7 +231,11 @@ class ImageReplyBot {
         }
       ]
     }
-    this.slackbot.postToChannel(trigger.channel, params);
+    try {
+      this.slackbot.postToChannel(channel, params);
+    } catch (error) {
+      this.log.error(error);
+    }
   }
 
   isPong(message) {
