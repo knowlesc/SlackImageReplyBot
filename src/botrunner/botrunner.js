@@ -68,7 +68,8 @@ class BotRunner {
       return {
         id: bot.id,
         running: bot.running,
-        config: bot.config
+        config: bot.config,
+        stats: bot.stats
       }
     });
     return botConfigs;

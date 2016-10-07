@@ -26,10 +26,13 @@ class ImageReplyBot {
     
     this.user = null;
     this.running = false;
-    this.messagesRespondedTo = 0;
     this.pinged = 0;
     this.pingDelaySeconds = 30; 
     this.reconnectIntervals = [30, 300, 600, 1800, 3600]
+
+    this.stats = {
+      messagesRespondedTo: 0
+    }
   }
 
   validateParams(params) {
@@ -52,10 +55,6 @@ class ImageReplyBot {
         throw new Error("No trigger words provided to trigger.");
       }
 
-      if (!trigger.channel) {
-        throw new Error("No slack channel provided to trigger.");
-      }
-
       if (!trigger.message) {
         throw new Error("No message provided to trigger.");
       }
@@ -74,6 +73,7 @@ class ImageReplyBot {
             user.name === this.slackbot.self.name);
 
           this.slackbot.socket.on('open', (message) => {
+            this.stats.startedAt = Date.now();
             this.log.info('Bot has connected to Slack API.')
             this.running = true;
             this.ping();
@@ -189,6 +189,7 @@ class ImageReplyBot {
   handleMessage(message) {
     if (this.isPong(message) && message.reply_to === this.id) {
       this.pinged = 0;
+      this.stats.lastPing = Date.now();
     }
 
     if (this.isMessage(message)
@@ -196,7 +197,7 @@ class ImageReplyBot {
       this.config.triggers.forEach(trigger => {
         if (this.triggerMatch(message, trigger)) {
           this.log.info('Received trigger, sending response. Trigger: ' + JSON.stringify(trigger));
-          this.messagesRespondedTo++;
+          this.stats.messagesRespondedTo++;
           this.sendTriggerMessage(trigger);
         }
       });
@@ -204,6 +205,10 @@ class ImageReplyBot {
   }
 
   triggerMatch(message, trigger) {
+    if (!trigger.channel) {
+      return true;
+    }
+
     var messageChannel = this.slackbot.channels.find(
       channel => channel.id === message.channel);
 

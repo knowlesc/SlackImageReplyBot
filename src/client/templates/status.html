@@ -7,7 +7,11 @@
         <span class="md-headline" ng-bind="bot.config.name"></span>
         <span class="md-subhead">
           <span class="glyphicon glyphicon-user" ng-class="bot.running ? 'status-on' : 'status-off'"></span>
-          <span ng-bind="bot.running ? 'started' : 'stopped'"></span>
+          <span ng-bind="bot.running ? 'RUNNING' : 'STOPPED'">
+            <md-tooltip md-direction="bottom" ng-show="bot.running">
+              Uptime: <span ng-bind="$ctrl.getUptime(bot)"></span> (last checked <span ng-bind="$ctrl.getLastPing(bot)"></span> ago)
+            </md-tooltip>
+          </span>
         </span>
       </md-card-title-text>
 
@@ -20,6 +24,9 @@
     </md-card-title>
 
     <md-card-actions layout="row" layout-align="end center">
+      <md-button class="md-icon-button md-primary" aria-label="Stats" ng-click="$ctrl.openStats(bot)" ng-if="bot.running">
+        <md-icon md-font-set="material-icons"> poll </md-icon>
+      </md-button>
       <md-button class="md-raised md-primary" ng-disabled="bot.running" ng-click="$ctrl.startBot(bot)">Start</md-button>
       <md-button class="md-raised md-primary" ng-disabled="!bot.running" ng-click="$ctrl.stopBot(bot)">Stop</md-button>
     </md-card-actions>

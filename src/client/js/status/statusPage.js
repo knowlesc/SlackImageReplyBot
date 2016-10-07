@@ -14,7 +14,7 @@ statusPage.service("StatusService", function($http) {
   }
 });
 
-statusPage.controller("StatusCtrl", function(StatusService) {
+statusPage.controller("StatusCtrl", function(StatusService, $mdDialog) {
 
   this.bots = [];
 
@@ -41,6 +41,52 @@ statusPage.controller("StatusCtrl", function(StatusService) {
       }, (err) => {
 
       });
+  }
+
+  this.getUptime = (bot) => {
+    if (!bot.running) {
+      return null;
+    }
+
+    var duration = moment.duration(Date.now() - bot.stats.startedAt);
+    return duration.humanize();
+  }
+
+  this.getLastPing = (bot) => {
+    if (!bot.running) {
+      return null;
+    }
+
+    var duration = moment.duration(Date.now() - bot.stats.lastPing);
+    return duration.humanize();
+  }
+
+  this.openStats = (bot) => {
+    $mdDialog.show({
+      controllerAs:'$ctrl',
+      clickOutsideToClose: true,
+      bindToController: true,
+      locals: {
+        stats: bot.stats
+      },
+      controller: function($mdDialog, stats){
+        this.closeDialog = () => {
+          $mdDialog.hide();
+        }
+      },
+      template: `
+        <md-dialog aria-label="List dialog" layout-padding>
+          <md-dialog-content>
+            Messages responded to: {{ $ctrl.stats.messagesRespondedTo }}
+          </md-dialog-content>
+          <md-dialog-actions>
+            <md-button ng-click="$ctrl.closeDialog()" class="md-primary">
+              Close
+            </md-button>
+          </md-dialog-actions>
+        </md-dialog>
+      `
+    });
   }
 });
 

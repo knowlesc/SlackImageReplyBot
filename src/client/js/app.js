@@ -1,10 +1,10 @@
 var angular = require("angular");
+moment = require("moment");
 
 require("angular-route");
 require("angular-animate");
 require("angular-aria");
 require("angular-material");
-
 require("./status/statusPage");
 
 var app = angular.module("app", [
